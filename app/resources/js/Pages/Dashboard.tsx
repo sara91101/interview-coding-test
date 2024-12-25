@@ -1,10 +1,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Movie, PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import 'font-awesome/css/font-awesome.min.css';
 
 export default function Dashboard({
     movies,
 }: PageProps<{ movies: Movie[] }>) {
+
     return (
         <AuthenticatedLayout
             header={
@@ -23,10 +25,29 @@ export default function Dashboard({
                                 <Link
                                     href={`/movies/${movie.slug}`}
                                     as="li"
-                                    className="cursor-pointer p-2 rounded-md hover:bg-sky-100"
+                                    className="p-2 rounded-md cursor-pointer hover:bg-sky-100"
                                 >
                                     <h2 className="font-bold">{movie.title}</h2>
                                     <p>{movie.description}</p>
+
+                                    {
+                                        movie.average_rate?
+                                        <div className="flex gap-4 justify-content-between">
+                                            <p>
+                                                {Array.from(Array(Math.floor(movie.average_rate)), (e, i) => {
+                                                    return <i className="fa fa-star"></i>
+                                                })}
+
+                                                {
+                                                    movie.average_rate - Math.floor(movie.average_rate) ? <i className="fa fa-star-half-o"></i> : <span></span>
+                                                }
+                                                {Array.from(Array(Math.floor(5 - movie.average_rate)), (e, i) => {
+                                                    return <i className="fa fa-star-o"></i>
+                                                })}
+                                            </p>
+                                        </div>
+                                        : <div></div>
+                                    }
                                 </Link>
                             ))}
                         </ul>

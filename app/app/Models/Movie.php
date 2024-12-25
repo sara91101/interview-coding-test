@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Movie extends Model
 {
@@ -18,6 +19,8 @@ class Movie extends Model
         'released',
     ];
 
+    protected $appends = ['average_rate','user_rate'];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -28,5 +31,22 @@ class Movie extends Model
         return [
             'released' => 'datetime',
         ];
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(MovieRating::class,'movie_id');
+    }
+
+
+    public function getAverageRateAttribute()
+    {
+        return $this->attributes['average_rate'] = ceil($this->ratings->avg('rating') * 2) / 2;
+    }
+
+    public function getUserRateAttribute()
+    {
+        $user_movie_rate = $this->ratings->where('user_id',Auth::user()->id)->first();
+        return $this->attributes['user_rate'] = !is_null($user_movie_rate) ? $this->ratings->where('user_id',Auth::user()->id)->first() : false;
     }
 }
